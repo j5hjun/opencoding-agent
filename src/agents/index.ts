@@ -8,11 +8,10 @@ export const injectAgents = async (opencodeConfig: any) => {
   opencodeConfig.agent = {
     ...existingAgents,
     
-    // Disable default agents
+
     "build": { disable: true },
     "plan": { disable: true },
 
-    // Inject our opencoding- prefixed agents
     "opencoding-plan": deepMerge(planAgent, {
       ...(existingAgents["opencoding-plan"] ?? {}),
       disable: false

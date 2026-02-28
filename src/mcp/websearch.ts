@@ -1,9 +1,5 @@
 import type { RemoteMcpConfig } from './types';
 
-/**
- * Exa AI web search - real-time web search
- * @see https://exa.ai
- */
 export const websearch: RemoteMcpConfig = {
   type: 'remote',
   url: 'https://mcp.exa.ai/mcp?tools=web_search_exa',

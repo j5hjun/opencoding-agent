@@ -12,10 +12,8 @@ function getCacheDir(): string {
   return path.join(os.homedir(), '.cache', 'opencode');
 }
 
-/** The directory used by OpenCode to cache node_modules for plugins. */
 export const CACHE_DIR = getCacheDir();
 
-/** Path to this plugin's package.json within the OpenCode cache. */
 export const INSTALLED_PACKAGE_JSON = path.join(
   CACHE_DIR,
   'node_modules',

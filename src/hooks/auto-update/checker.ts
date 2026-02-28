@@ -21,16 +21,10 @@ export interface NpmDistTags {
   [key: string]: string;
 }
 
-/**
- * Strips single and multi-line comments from a JSON string.
- */
 function stripJsonComments(text: string): string {
   return text.replace(/\/\/.*|\/\*[\s\S]*?\*\//g, "");
 }
 
-/**
- * Resolves the installed version from node_modules, with memoization.
- */
 let cachedPackageVersion: string | null = null;
 export function getCachedVersion(): string | null {
   if (cachedPackageVersion) return cachedPackageVersion;
@@ -45,7 +39,7 @@ export function getCachedVersion(): string | null {
       }
     }
   } catch {
-    /* empty */
+    
   }
 
   try {
@@ -66,9 +60,6 @@ export function getCachedVersion(): string | null {
   return null;
 }
 
-/**
- * Recursively searches upwards for a package.json belonging to this plugin.
- */
 function findPackageJsonUp(startPath: string): string | null {
   try {
     const stat = fs.statSync(startPath);
@@ -82,7 +73,7 @@ function findPackageJsonUp(startPath: string): string | null {
           const pkg = JSON.parse(content) as PackageJson;
           if (pkg.name === PACKAGE_NAME) return pkgPath;
         } catch {
-          /* empty */
+          
         }
       }
       const parent = path.dirname(dir);
@@ -90,14 +81,11 @@ function findPackageJsonUp(startPath: string): string | null {
       dir = parent;
     }
   } catch {
-    /* empty */
+    
   }
   return null;
 }
 
-/**
- * Fetches the latest version for a specific channel from the NPM registry.
- */
 export async function getLatestVersion(channel: string = 'latest'): Promise<string | null> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), NPM_FETCH_TIMEOUT);
@@ -119,9 +107,6 @@ export async function getLatestVersion(channel: string = 'latest'): Promise<stri
   }
 }
 
-/**
- * Checks if the plugin is running in local development mode (e.g. from a file path).
- */
 export function isLocalDevMode(directory: string): boolean {
   const configPaths = [
     path.join(directory, '.opencode', 'opencode.json'),
@@ -141,7 +126,7 @@ export function isLocalDevMode(directory: string): boolean {
         }
       }
     } catch {
-      /* ignore */
+      
     }
   }
   return false;

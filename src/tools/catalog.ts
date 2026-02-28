@@ -1,3 +1,4 @@
+
 import { tool, type ToolDefinition } from "@opencode-ai/plugin";
 import { z } from "zod";
 import * as path from "path";
@@ -5,21 +6,44 @@ import * as os from "os";
 
 const REPO_URL = "https://raw.githubusercontent.com/j5hjun/awesome-opencode-subagents/main";
 
-export const catalogTools: Record<string, ToolDefinition> = {
+const CatalogItemSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  category: z.string(),
+  path: z.string(),
+});
+
+const CatalogSchema = z.array(CatalogItemSchema);
+
+export const createCatalogTools = (client: any): Record<string, ToolDefinition> => ({
   "subagent-catalog:list": tool({
     description: "List all available subagent categories and the number of agents in each.",
     args: {},
     execute: async () => {
       try {
         const url = `${REPO_URL}/catalog.json?t=${Date.now()}`;
-        console.log(`Fetching catalog from: ${url}`);
+        await client.app.log({
+          body: {
+            service: "subagent-catalog",
+            level: "debug",
+            message: `Fetching catalog from: ${url}`
+          }
+        }).catch(() => {});
         const response = await fetch(url);
         if (!response.ok) {
           const errorMsg = `Fetch failed for ${url}: ${response.status} ${response.statusText}`;
-          console.error(errorMsg);
+          await client.app.log({
+            body: {
+              service: "subagent-catalog",
+              level: "error",
+              message: errorMsg
+            }
+          }).catch(() => {});
           return errorMsg;
         }
-        const catalog = await response.json() as any[];
+        
+        const rawCatalog = await response.json();
+        const catalog = CatalogSchema.parse(rawCatalog);
         
         const categories = catalog.reduce((acc: Record<string, number>, item) => {
           acc[item.category] = (acc[item.category] || 0) + 1;
@@ -50,7 +74,9 @@ export const catalogTools: Record<string, ToolDefinition> = {
         const url = `${REPO_URL}/catalog.json?t=${Date.now()}`;
         const response = await fetch(url);
         if (!response.ok) return `Fetch failed for ${url}: ${response.status} ${response.statusText}`;
-        const catalog = await response.json() as any[];
+        
+        const rawCatalog = await response.json();
+        const catalog = CatalogSchema.parse(rawCatalog);
         
         const results = catalog.filter(item => {
           const matchesQuery = item.name.toLowerCase().includes(query.toLowerCase()) || 
@@ -85,14 +111,30 @@ export const catalogTools: Record<string, ToolDefinition> = {
       const { name, scope } = args as { name: string; scope: "global" | "local" };
       try {
         const catalogUrl = `${REPO_URL}/catalog.json?t=${Date.now()}`;
+        await client.app.log({
+          body: {
+            service: "subagent-catalog",
+            level: "debug",
+            message: `Fetching catalog from: ${catalogUrl}`
+          }
+        }).catch(() => {});
         const catalogResponse = await fetch(catalogUrl);
         if (!catalogResponse.ok) return `Fetch failed for ${catalogUrl}: ${catalogResponse.status} ${catalogResponse.statusText}`;
-        const catalog = await catalogResponse.json() as any[];
+        
+        const rawCatalog = await catalogResponse.json();
+        const catalog = CatalogSchema.parse(rawCatalog);
         
         const agent = catalog.find(item => item.name.toLowerCase() === name.toLowerCase());
         if (!agent) return `Agent "${name}" not found in the catalog.`;
 
         const agentUrl = `${REPO_URL}/${agent.path}?t=${Date.now()}`;
+        await client.app.log({
+          body: {
+            service: "subagent-catalog",
+            level: "debug",
+            message: `Fetching agent content from: ${agentUrl}`
+          }
+        }).catch(() => {});
         const agentResponse = await fetch(agentUrl);
         if (!agentResponse.ok) return `Fetch failed for ${agentUrl}: ${agentResponse.status} ${agentResponse.statusText}`;
         const content = await agentResponse.text();
@@ -107,15 +149,29 @@ export const catalogTools: Record<string, ToolDefinition> = {
         const fileName = `${agent.name}.md`;
         const filePath = path.join(targetDir, fileName);
 
-        // Ensure directory exists - Bun.write will create the file, but we might need to create the directory
         const fs = await import("fs/promises");
         await fs.mkdir(targetDir, { recursive: true });
         await Bun.write(filePath, content);
 
+        await client.app.log({
+          body: {
+            service: "subagent-catalog",
+            level: "info",
+            message: `Successfully installed agent ${agent.name} to ${filePath}`
+          }
+        }).catch(() => {});
+
         return `✓ Successfully installed **${agent.name}** to ${scope} path: \`${filePath}\`\n\nYou can now use this agent by saying: "Use the ${agent.name} to [task]"`;
       } catch (error: any) {
+        await client.app.log({
+          body: {
+            service: "subagent-catalog",
+            level: "error",
+            message: `Error fetching agent: ${error.message}`
+          }
+        }).catch(() => {});
         return `Error fetching agent: ${error.message}`;
       }
     }
   })
-};
+});

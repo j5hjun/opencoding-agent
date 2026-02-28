@@ -12,22 +12,15 @@ export type AgentInfo = {
   prompt?: string;
 };
 
-/**
- * opencoding-agent Configuration Schema
- */
 export const PluginConfigSchema = z.object({
   disabled_mcps: z.array(z.string()).optional(),
-  // Add other config items as needed
+
 });
 
 export type PluginConfig = z.infer<typeof PluginConfigSchema>;
 
 export const PLUGIN_NAME = "opencoding-agent";
 
-/**
- * Loads the plugin configuration from the home directory or project directory.
- * Path: ~/.config/opencode/opencoding-agent.json or <project_dir>/.opencoding-agent.json
- */
 export function loadPluginConfig(projectDir?: string): PluginConfig {
   const globalConfigPath = path.join(os.homedir(), ".config", "opencode", `${PLUGIN_NAME}.json`);
   const projectConfigPath = projectDir ? path.join(projectDir, `.${PLUGIN_NAME}.json`) : null;
@@ -49,9 +42,6 @@ export function loadPluginConfig(projectDir?: string): PluginConfig {
   return {};
 }
 
-/**
- * Basic deep merge for configuration objects.
- */
 export function deepMerge(target: any, source: any): any {
   if (typeof target !== "object" || target === null || typeof source !== "object" || source === null) {
     return source;

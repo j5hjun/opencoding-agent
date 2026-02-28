@@ -1,7 +1,4 @@
-/**
- * Parse a list with wildcard and exclusion syntax.
- * Validates against allAvailable and removes duplicates.
- */
+
 export function parseList(items: string[], allAvailable: string[]): string[] {
   if (!items || items.length === 0) {
     return [];

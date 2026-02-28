@@ -1,6 +1,6 @@
 {
   "name": "opencoding-agent",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "dist/index.js",
   "devDependencies": {
     "@opencode-ai/plugin": "^1.0.0",
