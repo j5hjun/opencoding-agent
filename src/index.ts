@@ -1,5 +1,6 @@
 import type { Plugin } from "@opencode-ai/plugin";
 import { injectAgents } from "./agents";
+import { catalogTools } from "./tools/catalog";
 
 /**
  * opencoding-agent Plugin
@@ -11,6 +12,10 @@ const OpencodingAgentPlugin: Plugin = async (ctx) => {
     // Config hook: Injected once during initialization
     config: async (config) => {
       await injectAgents(config);
+    },
+    // Register custom tools
+    tool: {
+      ...catalogTools
     }
   };
 };
