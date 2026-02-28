@@ -1,10 +1,17 @@
 {
   "name": "opencoding-agent",
   "version": "1.0.2",
-  "description": "OpenCode specialized agents and subagent catalog manager",
-  "type": "module",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "devDependencies": {
+    "@opencode-ai/plugin": "^1.0.0",
+    "@types/bun": "^1.2.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  },
+  "peerDependencies": {
+    "@opencode-ai/plugin": "^1.0.0"
+  },
+  "description": "OpenCode specialized agents and subagent catalog manager",
   "files": [
     "dist",
     "README.md",
@@ -16,24 +23,14 @@
     "plugin"
   ],
   "license": "MIT",
-  "peerDependencies": {
-    "@opencode-ai/plugin": "^1.0.0"
-  },
-  "devDependencies": {
-    "@opencode-ai/plugin": "^1.0.0",
-    "@types/bun": "^1.2.0",
-    "@types/node": "^22.0.0",
-    "typescript": "^5.7.0"
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc",
     "prepublishOnly": "npm run build"
   },
-  "publishConfig": {
-    "access": "public"
-  },
-  "dependencies": {
-    "zod": "^4.3.6"
-  }
+  "type": "module",
+  "types": "dist/index.d.ts"
 }

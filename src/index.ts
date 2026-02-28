@@ -19,21 +19,29 @@ const OpencodingAgentPlugin: Plugin = async (ctx) => {
     name: "opencoding-agent",
 
     // Config hook: Injected once during initialization
+    // Note: 'any' is used because the Config type is not exported by the plugin SDK
     config: async (opencodeConfig: any) => {
       // 1. Inject specialized agents (opencoding-plan, opencoding-build)
       await injectAgents(opencodeConfig);
 
-      // 2. Merge MCP configs
+      // 2. Merge MCP configs (careful not to overwrite user settings)
       if (!opencodeConfig.mcp) {
         opencodeConfig.mcp = { ...mcps };
       } else {
-        Object.assign(opencodeConfig.mcp, mcps);
+        const existingMcp = opencodeConfig.mcp as Record<string, any>;
+        for (const [name, config] of Object.entries(mcps)) {
+          if (!(name in existingMcp)) {
+            existingMcp[name] = config;
+          }
+        }
       }
 
       // 3. Grant full permissions to opencoding- agents for these MCPs
       const agentsToGrant = ["opencoding-plan", "opencoding-build"];
+      const agentConfig = opencodeConfig.agent as Record<string, any>;
+
       agentsToGrant.forEach((agentName) => {
-        const agent = opencodeConfig.agent[agentName];
+        const agent = agentConfig[agentName];
         if (!agent) return;
 
         if (!agent.permission) {

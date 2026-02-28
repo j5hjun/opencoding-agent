@@ -1,26 +1,27 @@
 import { planAgent } from "./plan";
 import { buildAgent } from "./build";
+import { deepMerge } from "../config";
 
-export const injectAgents = async (config: any) => {
-  config.agent = {
-    ...config.agent,
+export const injectAgents = async (opencodeConfig: any) => {
+  const existingAgents = (opencodeConfig.agent ?? {}) as Record<string, any>;
+
+  opencodeConfig.agent = {
+    ...existingAgents,
     
     // Disable default agents
     "build": { disable: true },
     "plan": { disable: true },
 
     // Inject our opencoding- prefixed agents
-    "opencoding-plan": {
-      ...planAgent,
-      ...(config.agent?.["opencoding-plan"] ?? {}),
+    "opencoding-plan": deepMerge(planAgent, {
+      ...(existingAgents["opencoding-plan"] ?? {}),
       disable: false
-    },
-    "opencoding-build": {
-      ...buildAgent,
-      ...(config.agent?.["opencoding-build"] ?? {}),
+    }),
+    "opencoding-build": deepMerge(buildAgent, {
+      ...(existingAgents["opencoding-build"] ?? {}),
       disable: false
-    }
+    })
   };
 
-  config.default_agent = "opencoding-plan";
+  (opencodeConfig as any).default_agent = "opencoding-plan";
 };

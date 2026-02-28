@@ -1,11 +1,11 @@
-import { tool } from "@opencode-ai/plugin";
+import { tool, type ToolDefinition } from "@opencode-ai/plugin";
 import { z } from "zod";
 import * as path from "path";
 import * as os from "os";
 
 const REPO_URL = "https://raw.githubusercontent.com/j5hjun/awesome-opencode-subagents/main";
 
-export const catalogTools = {
+export const catalogTools: Record<string, ToolDefinition> = {
   "subagent-catalog:list": tool({
     description: "List all available subagent categories and the number of agents in each.",
     args: {},
@@ -44,7 +44,8 @@ export const catalogTools = {
       query: z.string().describe("Search term"),
       category: z.string().optional().describe("Filter by category")
     },
-    execute: async ({ query, category }) => {
+    execute: async (args) => {
+      const { query, category } = args as { query: string; category?: string };
       try {
         const url = `${REPO_URL}/catalog.json?t=${Date.now()}`;
         const response = await fetch(url);
@@ -80,7 +81,8 @@ export const catalogTools = {
       name: z.string().describe("Name of the agent to fetch"),
       scope: z.enum(["global", "local"]).default("global").describe("Installation scope (global: all projects, local: current project only)")
     },
-    execute: async ({ name, scope }, { directory }) => {
+    execute: async (args, { directory }) => {
+      const { name, scope } = args as { name: string; scope: "global" | "local" };
       try {
         const catalogUrl = `${REPO_URL}/catalog.json?t=${Date.now()}`;
         const catalogResponse = await fetch(catalogUrl);

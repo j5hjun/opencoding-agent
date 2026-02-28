@@ -1,21 +1,25 @@
 /**
  * Parse a list with wildcard and exclusion syntax.
+ * Validates against allAvailable and removes duplicates.
  */
 export function parseList(items: string[], allAvailable: string[]): string[] {
   if (!items || items.length === 0) {
     return [];
   }
 
-  const allow = items.filter((i) => !i.startsWith('!'));
-  const deny = items.filter((i) => i.startsWith('!')).map((i) => i.slice(1));
+  const allow = items.filter((i) => !i.startsWith("!"));
+  const deny = items.filter((i) => i.startsWith("!")).map((i) => i.slice(1));
 
-  if (deny.includes('*')) {
+  if (deny.includes("*")) {
     return [];
   }
 
-  if (allow.includes('*')) {
-    return allAvailable.filter((item) => !deny.includes(item));
+  let result: string[];
+  if (allow.includes("*")) {
+    result = allAvailable.filter((item) => !deny.includes(item));
+  } else {
+    result = allow.filter((item) => !deny.includes(item) && allAvailable.includes(item));
   }
 
-  return allow.filter((item) => !deny.includes(item));
+  return [...new Set(result)];
 }

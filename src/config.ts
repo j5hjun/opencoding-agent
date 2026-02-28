@@ -3,6 +3,15 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
 
+export type AgentInfo = {
+  name: string;
+  description: string;
+  mode: string;
+  color: string;
+  permission: Record<string, string>;
+  prompt?: string;
+};
+
 /**
  * opencoding-agent Configuration Schema
  */
@@ -38,4 +47,25 @@ export function loadPluginConfig(projectDir?: string): PluginConfig {
   }
 
   return {};
+}
+
+/**
+ * Basic deep merge for configuration objects.
+ */
+export function deepMerge(target: any, source: any): any {
+  if (typeof target !== "object" || target === null || typeof source !== "object" || source === null) {
+    return source;
+  }
+
+  const result = { ...target };
+  for (const key in source) {
+    if (Object.prototype.hasOwnProperty.call(source, key)) {
+      if (typeof source[key] === "object" && source[key] !== null && !Array.isArray(source[key])) {
+        result[key] = deepMerge(target[key] || {}, source[key]);
+      } else {
+        result[key] = source[key];
+      }
+    }
+  }
+  return result;
 }
