@@ -11,7 +11,7 @@ import { loadPluginConfig } from "./config";
  * Now with dynamic MCP injection!
  */
 const OpencodingAgentPlugin: Plugin = async (ctx) => {
-  const pluginConfig = loadPluginConfig();
+  const pluginConfig = loadPluginConfig(ctx.directory);
   const mcps = createBuiltinMcps(pluginConfig.disabled_mcps);
   const mcpNames = Object.keys(mcps);
 

@@ -16,22 +16,26 @@ export type PluginConfig = z.infer<typeof PluginConfigSchema>;
 export const PLUGIN_NAME = "opencoding-agent";
 
 /**
- * Loads the plugin configuration from the home directory.
- * Path: ~/.config/opencode/opencoding-agent.json
+ * Loads the plugin configuration from the home directory or project directory.
+ * Path: ~/.config/opencode/opencoding-agent.json or <project_dir>/.opencoding-agent.json
  */
-export function loadPluginConfig(): PluginConfig {
-  const configPath = path.join(os.homedir(), ".config", "opencode", `${PLUGIN_NAME}.json`);
+export function loadPluginConfig(projectDir?: string): PluginConfig {
+  const globalConfigPath = path.join(os.homedir(), ".config", "opencode", `${PLUGIN_NAME}.json`);
+  const projectConfigPath = projectDir ? path.join(projectDir, `.${PLUGIN_NAME}.json`) : null;
   
-  if (!fs.existsSync(configPath)) {
-    return {};
+  const configPaths = [projectConfigPath, globalConfigPath].filter(Boolean) as string[];
+
+  for (const configPath of configPaths) {
+    if (fs.existsSync(configPath)) {
+      try {
+        const rawContent = fs.readFileSync(configPath, "utf-8");
+        const json = JSON.parse(rawContent);
+        return PluginConfigSchema.parse(json);
+      } catch (error) {
+        console.error(`[${PLUGIN_NAME}] Failed to load config from ${configPath}:`, error);
+      }
+    }
   }
 
-  try {
-    const rawContent = fs.readFileSync(configPath, "utf-8");
-    const json = JSON.parse(rawContent);
-    return PluginConfigSchema.parse(json);
-  } catch (error) {
-    console.error(`[${PLUGIN_NAME}] Failed to load config from ${configPath}:`, error);
-    return {};
-  }
+  return {};
 }
