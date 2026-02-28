@@ -12,10 +12,12 @@ export const injectAgents = async (config: any) => {
     // Inject our opencoding- prefixed agents
     "opencoding-plan": {
       ...planAgent,
+      ...(config.agent?.["opencoding-plan"] ?? {}),
       disable: false
     },
     "opencoding-build": {
       ...buildAgent,
+      ...(config.agent?.["opencoding-build"] ?? {}),
       disable: false
     }
   };
