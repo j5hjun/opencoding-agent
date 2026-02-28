@@ -1,6 +1,6 @@
 {
   "name": "opencoding-agent",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "OpenCode specialized agents and subagent catalog manager",
   "type": "module",
   "main": "dist/index.js",
