@@ -3,6 +3,7 @@ import { injectAgents } from "./agents";
 import { catalogTools } from "./tools/catalog";
 import { createBuiltinMcps } from "./mcp";
 import { loadPluginConfig } from "./config";
+import { createAutoUpdateHook } from "./hooks/auto-update";
 
 /**
  * opencoding-agent Plugin
@@ -14,6 +15,9 @@ const OpencodingAgentPlugin: Plugin = async (ctx) => {
   const pluginConfig = loadPluginConfig(ctx.directory);
   const mcps = createBuiltinMcps(pluginConfig.disabled_mcps);
   const mcpNames = Object.keys(mcps);
+
+  // Initialize auto-update hook
+  const autoUpdateHook = createAutoUpdateHook(ctx);
 
   return {
     name: "opencoding-agent",
@@ -59,6 +63,11 @@ const OpencodingAgentPlugin: Plugin = async (ctx) => {
           }
         }
       });
+    },
+
+    // Session events
+    event: async (input: any) => {
+      await autoUpdateHook.event(input);
     },
 
     // Register custom tools
