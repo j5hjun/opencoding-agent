@@ -1,8 +1,7 @@
-import type { Config } from "@opencode-ai/plugin";
 import { planAgent } from "./plan";
 import { buildAgent } from "./build";
 
-export const injectAgents = async (config: Config) => {
+export const injectAgents = async (config: any) => {
   const planPrompt = await Bun.file(`${import.meta.dir}/../prompts/plan.txt`).text();
   const buildPrompt = await Bun.file(`${import.meta.dir}/../prompts/build.txt`).text();
 
@@ -16,10 +15,12 @@ export const injectAgents = async (config: Config) => {
     // Inject our opencoding- prefixed agents
     "opencoding-plan": {
       ...planAgent,
+      disable: false,
       prompt: planPrompt
     },
     "opencoding-build": {
       ...buildAgent,
+      disable: false,
       prompt: buildPrompt
     }
   };

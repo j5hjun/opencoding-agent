@@ -1,5 +1,9 @@
-import type { Agent } from "@opencode-ai/plugin";
-
-export type AgentInfo = Omit<Agent, "prompt">;
+export type AgentInfo = {
+  name: string;
+  description: string;
+  mode: string;
+  color: string;
+  permission: Record<string, string>;
+};
 
 export const PLUGIN_NAME = "opencoding-agent";

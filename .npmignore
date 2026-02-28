@@ -1,0 +1,14 @@
+node_modules/
+tests/
+test-dir/
+tsconfig.json
+bun.lock
+*.py
+*.pyc
+__pycache__/
+.opencode/
+.ruff_cache/
+.github/
+docs/
+src/
+index.ts

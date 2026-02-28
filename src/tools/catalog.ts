@@ -8,7 +8,7 @@ const REPO_URL = "https://raw.githubusercontent.com/j5hjun/awesome-opencode-suba
 export const catalogTools = {
   "subagent-catalog:list": tool({
     description: "List all available subagent categories and the number of agents in each.",
-    parameters: z.object({}),
+    args: {},
     execute: async () => {
       try {
         const url = `${REPO_URL}/catalog.json?t=${Date.now()}`;
@@ -40,10 +40,10 @@ export const catalogTools = {
 
   "subagent-catalog:search": tool({
     description: "Search for subagents by name, description, or category.",
-    parameters: z.object({
+    args: {
       query: z.string().describe("Search term"),
       category: z.string().optional().describe("Filter by category")
-    }),
+    },
     execute: async ({ query, category }) => {
       try {
         const url = `${REPO_URL}/catalog.json?t=${Date.now()}`;
@@ -76,10 +76,10 @@ export const catalogTools = {
 
   "subagent-catalog:fetch": tool({
     description: "Download and install a subagent by name. You can choose to install it globally or locally.",
-    parameters: z.object({
+    args: {
       name: z.string().describe("Name of the agent to fetch"),
       scope: z.enum(["global", "local"]).default("global").describe("Installation scope (global: all projects, local: current project only)")
-    }),
+    },
     execute: async ({ name, scope }, { directory }) => {
       try {
         const catalogUrl = `${REPO_URL}/catalog.json?t=${Date.now()}`;

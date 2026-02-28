@@ -14,10 +14,12 @@ Add this plugin to your `opencode.json`:
 ```json
 {
   "plugin": [
-    "file:///path/to/opencoding-agent/index.ts"
+    "opencoding-agent"
   ]
 }
 ```
+
+OpenCode automatically installs plugin dependencies at runtime.
 
 ## Tools
 
@@ -31,4 +33,10 @@ To install dependencies:
 
 ```bash
 bun install
+```
+
+To build:
+
+```bash
+bun run build
 ```
