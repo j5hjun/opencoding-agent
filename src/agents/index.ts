@@ -1,24 +1,19 @@
-import { planAgent } from "./plan";
-import { buildAgent } from "./build";
+import { mainAgent } from "./agent";
 
 export const injectAgents = async (config: any) => {
   config.agent = {
     ...config.agent,
     
-    // Disable default agents
+    // Disable default build agent, but keep default plan agent
     "build": { disable: true },
-    "plan": { disable: true },
+    "plan": { disable: false },
 
-    // Inject our opencoding- prefixed agents
-    "opencoding-plan": {
-      ...planAgent,
-      disable: false
-    },
-    "opencoding-build": {
-      ...buildAgent,
+    // Inject our opencoding-agent
+    "opencoding-agent": {
+      ...mainAgent,
       disable: false
     }
   };
 
-  config.default_agent = "opencoding-plan";
+  config.default_agent = "opencoding-agent";
 };
