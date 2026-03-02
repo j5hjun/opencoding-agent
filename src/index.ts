@@ -5,6 +5,7 @@ import { setupSuperpowersLink } from "./setup/linker";
 import { loadSuperpowersHooks } from "./hooks/superpowers-loader";
 import { loadCatalogHooks } from "./hooks/catalog-prompt";
 import { logger } from "./utils/logger";
+import { mergePluginHooks } from "./utils/hooks";
 
 /**
  * opencoding-agent Plugin
@@ -31,9 +32,8 @@ const OpencodingAgentPlugin: Plugin = async (ctx) => {
     tool: {
       ...catalogTools
     },
-    // Merge superpowers hooks (like system.transform)
-    ...superpowersHooks,
-    ...catalogHooks
+    // Chained hooks from multiple sources
+    ...mergePluginHooks([superpowersHooks, catalogHooks])
   };
 };
 
