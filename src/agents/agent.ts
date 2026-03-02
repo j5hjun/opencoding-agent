@@ -1,8 +1,8 @@
 import type { AgentInfo } from "../config";
 
-export const buildAgent: AgentInfo = {
-  name: "opencoding-build",
-  description: "The default agent. Executes tools based on configured permissions.",
+export const mainAgent: AgentInfo = {
+  name: "opencoding-agent",
+  description: "The default building agent with full tool access.",
   mode: "primary",
   color: "#e74c3c",
   permission: {
