@@ -1,11 +1,10 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import { getPluginRoot } from '../utils/paths';
+import { logger } from '../utils/logger';
 
 export const loadCatalogHooks = async (ctx: any) => {
-  const pluginRoot = path.resolve(__dirname, '../../');
+  const pluginRoot = getPluginRoot();
   const guidePath = path.join(pluginRoot, 'src/prompts/subagent-catalog-guide.md');
 
   let guideContent = '';
@@ -14,7 +13,7 @@ export const loadCatalogHooks = async (ctx: any) => {
       guideContent = fs.readFileSync(guidePath, 'utf8');
     }
   } catch (err) {
-    console.error('[opencoding-agent] Failed to read catalog guide:', err);
+    logger.error('Failed to read catalog guide:', err);
   }
 
   return {
