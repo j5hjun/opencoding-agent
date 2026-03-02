@@ -3,6 +3,7 @@ import { injectAgents } from "./agents";
 import { catalogTools } from "./tools/catalog";
 import { setupSuperpowersLink } from "./setup/linker";
 import { loadSuperpowersHooks } from "./hooks/superpowers-loader";
+import { loadCatalogHooks } from "./hooks/catalog-prompt";
 
 /**
  * opencoding-agent Plugin
@@ -17,6 +18,8 @@ const OpencodingAgentPlugin: Plugin = async (ctx) => {
 
   // Load original superpowers hooks
   const superpowersHooks = await loadSuperpowersHooks(ctx);
+  // Load catalog guidance hooks
+  const catalogHooks = await loadCatalogHooks(ctx);
 
   return {
     // Config hook: Injected once during initialization
@@ -28,7 +31,8 @@ const OpencodingAgentPlugin: Plugin = async (ctx) => {
       ...catalogTools
     },
     // Merge superpowers hooks (like system.transform)
-    ...superpowersHooks
+    ...superpowersHooks,
+    ...catalogHooks
   };
 };
 
