@@ -8,7 +8,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
  * This ensures the exact same logic runs as the original.
  */
 export const loadSuperpowersHooks = async (ctx: any) => {
-  const pluginPath = path.resolve(__dirname, '../superpowers/.opencode/plugins/superpowers.js');
+  const pluginRoot = path.resolve(__dirname, '../../../');
+  const pluginPath = path.join(pluginRoot, 'src/superpowers/.opencode/plugins/superpowers.js');
   
   try {
     const { SuperpowersPlugin } = await import(pluginPath);

@@ -16,9 +16,11 @@ export const setupSuperpowersLink = async (ctx: any) => {
   const targetPlugin = path.join(configDir, 'plugins/superpowers.js');
 
   // Calculate absolute paths to bundled source
-  // __dirname is src/setup/
-  const sourceSkills = path.resolve(__dirname, '../superpowers/skills');
-  const sourcePlugin = path.resolve(__dirname, '../superpowers/.opencode/plugins/superpowers.js');
+  // __dirname is dist/src/setup/ when running from dist
+  // We want to reach [root]/src/superpowers/
+  const pluginRoot = path.resolve(__dirname, '../../../');
+  const sourceSkills = path.join(pluginRoot, 'src/superpowers/skills');
+  const sourcePlugin = path.join(pluginRoot, 'src/superpowers/.opencode/plugins/superpowers.js');
 
   const ensureLink = (source: string, target: string, type: 'dir' | 'file') => {
     if (!fs.existsSync(source)) {
