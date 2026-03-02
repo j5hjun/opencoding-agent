@@ -11,6 +11,7 @@ import { loadSuperpowersHooks } from "./hooks/superpowers-loader";
  * Now bundles and auto-configures Superpowers!
  */
 const OpencodingAgentPlugin: Plugin = async (ctx) => {
+  console.log('[opencoding-agent] Plugin initializing...');
   // Setup: Auto-link superpowers resources to global config
   await setupSuperpowersLink(ctx);
 
