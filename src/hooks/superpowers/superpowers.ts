@@ -48,7 +48,7 @@ const normalizePath = (p: string | undefined, homeDir: string) => {
 
 export const SuperpowersPlugin = async ({ client, directory }: { client?: any, directory?: string }) => {
   const homeDir = os.homedir();
-  const superpowersSkillsDir = path.resolve(__dirname, '../../skills');
+  const superpowersSkillsDir = path.resolve(__dirname, '../../skills/superpowers');
   const envConfigDir = normalizePath(process.env.OPENCODE_CONFIG_DIR, homeDir);
   const configDir = envConfigDir || path.join(homeDir, '.config/opencode');
 

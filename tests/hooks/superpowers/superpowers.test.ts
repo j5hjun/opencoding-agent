@@ -47,4 +47,15 @@ describe('Superpowers Plugin (Ported Logic)', () => {
       (fs as any).existsSync = originalExists;
     }
   });
+
+  it('INTEGRATION: should find real using-superpowers skill from source', async () => {
+    // This test uses the real file system to verify the path in src/hooks/superpowers/superpowers.ts
+    const plugin = await SuperpowersPlugin({ directory: process.cwd() });
+    const transform = plugin['experimental.chat.system.transform'];
+    const output = { system: [] as string[] };
+    await transform({}, output);
+
+    expect(output.system.length).toBeGreaterThan(0);
+    expect(output.system[0]).toContain('using-superpowers');
+  });
 });
