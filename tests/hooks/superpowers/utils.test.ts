@@ -1,7 +1,34 @@
 import { describe, expect, it } from 'bun:test';
-import { getTestPath, translateToolName } from '../../../src/hooks/superpowers/utils';
+import { getTestPath, translateToolName, extractTestPathFromCommand } from '../../../src/hooks/superpowers/utils';
 
 describe('superpowers utils', () => {
+  describe('extractTestPathFromCommand', () => {
+    it('should extract test path from bun test command', () => {
+      expect(extractTestPathFromCommand('bun test tests/foo.test.ts')).toBe('tests/foo.test.ts');
+    });
+
+    it('should extract test path from npm test command', () => {
+      expect(extractTestPathFromCommand('npm test tests/bar.test.tsx')).toBe('tests/bar.test.tsx');
+    });
+
+    it('should return null if no test path is found', () => {
+      expect(extractTestPathFromCommand('ls -R')).toBeNull();
+    });
+
+    it('should handle commands with multiple arguments', () => {
+      expect(extractTestPathFromCommand('bun test --watch tests/baz.test.ts --verbose')).toBe('tests/baz.test.ts');
+    });
+
+    it('should handle quoted paths', () => {
+      expect(extractTestPathFromCommand('bun test "tests/with space.test.ts"')).toBe('tests/with space.test.ts');
+      expect(extractTestPathFromCommand("bun test 'tests/single_quote.test.ts'")).toBe('tests/single_quote.test.ts');
+    });
+
+    it('should handle .spec.ts extensions', () => {
+      expect(extractTestPathFromCommand('bun test tests/foo.spec.ts')).toBe('tests/foo.spec.ts');
+    });
+  });
+
   describe('getTestPath', () => {
     it('should convert src/path/file.ts to tests/path/file.test.ts', () => {
       expect(getTestPath('src/hooks/superpowers/utils.ts')).toBe('tests/hooks/superpowers/utils.test.ts');

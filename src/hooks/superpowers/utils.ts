@@ -35,7 +35,7 @@ export function getTestPath(srcPath: string): string {
     const relativePath = normalizedPath.replace(/^src[\/\\]/, '');
     const ext = path.extname(relativePath);
     const baseName = relativePath.slice(0, -ext.length);
-    return path.join(prefix, 'tests', `${baseName}.test${ext}`);
+    return path.normalize(path.join(prefix, 'tests', `${baseName}.test${ext}`));
   }
 
   console.warn(`[getTestPath] Could not determine test path for: ${srcPath}`);
@@ -54,4 +54,23 @@ export function translateToolName(alias: string): string {
   };
 
   return mapping[alias] || alias.toLowerCase();
+}
+
+/**
+ * Extracts a test file path from a shell command.
+ * Handles potential quotes and identifies .test.ts, .test.tsx, .spec.ts, etc.
+ * Example: "bun test 'tests/foo.test.ts'" -> "tests/foo.test.ts"
+ */
+export function extractTestPathFromCommand(command: string): string | null {
+  // Regex to find potential test file paths (supports .test or .spec with various extensions)
+  // Group 2 handles quoted paths, Group 3 handles unquoted paths
+  const testPathRegex = /(?:(['"])(.+?\.(?:test|spec)\.(?:tsx|ts|jsx|js))\1)|((?:[^\s'"\\]|\\.)+\.(?:test|spec)\.(?:tsx|ts|jsx|js))/g;
+  let match;
+  
+  while ((match = testPathRegex.exec(command)) !== null) {
+    const pathPart = match[2] || match[3];
+    return path.normalize(pathPart);
+  }
+  
+  return null;
 }
