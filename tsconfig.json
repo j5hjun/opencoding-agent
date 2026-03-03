@@ -11,5 +11,5 @@
     "noEmit": false
   },
   "include": ["src/**/*", "index.ts"],
-  "exclude": ["node_modules", "tests", "test-dir"]
+  "exclude": ["node_modules", "tests", "test-dir", "src/skills"]
 }
