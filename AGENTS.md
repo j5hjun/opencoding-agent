@@ -1,4 +1,4 @@
-- AGENT.md: Record core principles only in concise and intuitive bullet point format.
+- AGENTS.md: Record core principles only in concise and intuitive bullet point format.
 - Top-down: Hierarchy-based strict unidirectional imports from top to bottom; reverse imports are strictly prohibited.
 - Recursive Index: Every directory must use `index.ts` as its sole entry point (Barrel Export) for higher-level modules.
 - Co-location & High Cohesion: Keep logic, types, and helpers within the module where they are used to ensure functional self-containment.
