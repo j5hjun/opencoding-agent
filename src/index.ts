@@ -14,6 +14,9 @@ import { mergePluginHooks } from "./utils/hooks";
  * Now bundles and auto-configures Superpowers!
  */
 const OpencodingAgentPlugin: Plugin = async (ctx) => {
+  // Initialize logger with client to enable TUI features (toasts)
+  logger.setClient(ctx.client);
+
   logger.info('Plugin initializing...');
   // Setup: Auto-link superpowers resources to global config
   await setupSuperpowersLink(ctx);

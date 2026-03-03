@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import { getPluginRoot, getConfigDir } from '../utils/paths';
+import { logger } from '../utils/logger';
 
 const extractAndStripFrontmatter = (content: string) => {
   const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
@@ -29,7 +30,10 @@ export const getSuperpowersHooks = async (_ctx: any) => {
 
   const getBootstrapContent = () => {
     const skillPath = path.join(superpowersSkillsDir, 'using-superpowers', 'SKILL.md');
-    if (!fs.existsSync(skillPath)) return null;
+    if (!fs.existsSync(skillPath)) {
+      logger.warn('Superpowers bootstrap skill not found', 'Plugin Init');
+      return null;
+    }
 
     const fullContent = fs.readFileSync(skillPath, 'utf8');
     const { content } = extractAndStripFrontmatter(fullContent);

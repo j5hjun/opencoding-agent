@@ -1,5 +1,6 @@
 import { tool } from "@opencode-ai/plugin";
 import { REPO_URL } from "./constants";
+import { logger } from "../../utils/logger";
 
 export const listTool = tool({
   description: "List all available subagent categories and the number of agents in each.",
@@ -7,11 +8,12 @@ export const listTool = tool({
   execute: async () => {
     try {
       const url = `${REPO_URL}/catalog.json?t=${Date.now()}`;
-      console.log(`Fetching catalog from: ${url}`);
+      // Internal info log
+      logger.info(`Fetching catalog from: ${url}`);
       const response = await fetch(url);
       if (!response.ok) {
         const errorMsg = `Fetch failed for ${url}: ${response.status} ${response.statusText}`;
-        console.error(errorMsg);
+        logger.error(errorMsg);
         return errorMsg;
       }
       const catalog = await response.json() as any[];

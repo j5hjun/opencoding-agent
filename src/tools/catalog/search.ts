@@ -1,6 +1,7 @@
 import { tool } from "@opencode-ai/plugin";
 import { z } from "zod";
 import { REPO_URL } from "./constants";
+import { logger } from "../../utils/logger";
 
 export const searchTool = tool({
   description: "Search for subagents by name, description, or category.",
@@ -11,8 +12,13 @@ export const searchTool = tool({
   execute: async ({ query, category }) => {
     try {
       const url = `${REPO_URL}/catalog.json?t=${Date.now()}`;
+      logger.info(`Searching catalog at: ${url}`);
       const response = await fetch(url);
-      if (!response.ok) return `Fetch failed for ${url}: ${response.status} ${response.statusText}`;
+      if (!response.ok) {
+        const err = `Fetch failed for ${url}: ${response.status} ${response.statusText}`;
+        logger.error(err);
+        return err;
+      }
       const catalog = await response.json() as any[];
       
       const results = catalog.filter(item => {
@@ -22,7 +28,11 @@ export const searchTool = tool({
         return matchesQuery && matchesCategory;
       });
 
-      if (results.length === 0) return "No agents found matching your search.";
+      if (results.length === 0) {
+        const msg = `No agents found matching "${query}"`;
+        logger.warn(msg, 'Search Result');
+        return msg;
+      }
 
       let output = `Search Results for "${query}":\n\n`;
       for (const item of results) {
@@ -33,7 +43,9 @@ export const searchTool = tool({
       output += "Use subagent-catalog:fetch to install an agent.";
       return output;
     } catch (error: any) {
-      return `Error searching catalog: ${error.message}`;
+      const errMsg = `Error searching catalog: ${error.message}`;
+      logger.error(errMsg);
+      return errMsg;
     }
   }
 });

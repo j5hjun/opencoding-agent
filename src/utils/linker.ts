@@ -27,7 +27,7 @@ export const ensureSymlink = (source: string, target: string, type: 'dir' | 'fil
 
   try {
     fs.symlinkSync(source, target, type);
-    logger.info(`Created link: ${target} -> ${source}`);
+    logger.success(`Resource linked: ${path.basename(target)}`, 'Superpowers Link');
   } catch (err) {
     logger.error(`Failed to create link ${target}`, err);
   }

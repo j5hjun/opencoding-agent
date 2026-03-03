@@ -3,6 +3,7 @@ import { z } from "zod";
 import * as path from "path";
 import * as os from "os";
 import { REPO_URL } from "./constants";
+import { logger } from "../../utils/logger";
 
 export const fetchTool = tool({
   description: "Download and install a subagent by name. You can choose to install it globally or locally.",
@@ -14,15 +15,27 @@ export const fetchTool = tool({
     try {
       const catalogUrl = `${REPO_URL}/catalog.json?t=${Date.now()}`;
       const catalogResponse = await fetch(catalogUrl);
-      if (!catalogResponse.ok) return `Fetch failed for ${catalogUrl}: ${catalogResponse.status} ${catalogResponse.statusText}`;
+      if (!catalogResponse.ok) {
+        const err = `Fetch failed for ${catalogUrl}: ${catalogResponse.status} ${catalogResponse.statusText}`;
+        logger.error(err);
+        return err;
+      }
       const catalog = await catalogResponse.json() as any[];
       
       const agent = catalog.find(item => item.name.toLowerCase() === name.toLowerCase());
-      if (!agent) return `Agent "${name}" not found in the catalog.`;
+      if (!agent) {
+        const err = `Agent "${name}" not found in the catalog.`;
+        logger.warn(err);
+        return err;
+      }
 
       const agentUrl = `${REPO_URL}/${agent.path}?t=${Date.now()}`;
       const agentResponse = await fetch(agentUrl);
-      if (!agentResponse.ok) return `Fetch failed for ${agentUrl}: ${agentResponse.status} ${agentResponse.statusText}`;
+      if (!agentResponse.ok) {
+        const err = `Fetch failed for ${agentUrl}: ${agentResponse.status} ${agentResponse.statusText}`;
+        logger.error(err);
+        return err;
+      }
       const content = await agentResponse.text();
 
       let targetDir: string;
@@ -40,9 +53,14 @@ export const fetchTool = tool({
       await fs.mkdir(targetDir, { recursive: true });
       await Bun.write(filePath, content);
 
-      return `✓ Successfully installed **${agent.name}** to ${scope} path: \`${filePath}\`\n\nYou can now use this agent by saying: "Use the ${agent.name} to [task]"`;
+      const successMsg = `Successfully installed **${agent.name}** to ${scope} path`;
+      logger.success(successMsg, 'Agent Installed');
+
+      return `✓ ${successMsg}: \`${filePath}\`\n\nYou can now use this agent by saying: "Use the ${agent.name} to [task]"`;
     } catch (error: any) {
-      return `Error fetching agent: ${error.message}`;
+      const errMsg = `Error fetching agent: ${error.message}`;
+      logger.error(errMsg);
+      return errMsg;
     }
   }
 });
