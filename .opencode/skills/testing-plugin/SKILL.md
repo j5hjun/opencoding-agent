@@ -1,51 +1,49 @@
 ---
 name: testing-plugin
-description: Use when verifying that opencoding-agent and superpowers are correctly loaded and symlinked in a fresh environment.
+description: Use when verifying that opencoding-agent and superpowers are correctly loaded, symlinked, and functioning as intended in a fresh environment.
 ---
 
 # Testing Plugin
 
 ## Overview
-This skill provides a systematic workflow for verifying the "Zero-Config" setup of `opencoding-agent` and its bundled `superpowers`.
+This skill provides a systematic, brainstorming-style workflow for verifying the "Zero-Config" setup and the intelligent guardrail functionality of `opencoding-agent`.
 
-## When to Use
-- After modifying the auto-installer (`linker.ts`)
-- After updating bundled superpowers resources
-- Before committing changes to the setup logic
-- To troubleshoot missing superpowers skills in OpenCode
+<HARD-GATE>
+Do NOT claim the plugin is fully functional or ready for production until EVERY item in the checklist is verified in order. "Passing unit tests" is not enough; E2E behavior must be confirmed.
+</HARD-GATE>
 
-## Core Workflow
+## Checklist
+You MUST complete these items in order:
 
-### 1. Preparation (Build and Test)
-Before manual verification, ensure all automated tests pass and the plugin is built.
-- **Build**: `npm run build` (or `bun run build`) to reflect `src/` changes in `dist/`.
-- **Unit Tests**: `bun test` to ensure core logic is intact.
+1.  **Local Integrity Check** — Unit tests and build must pass to ensure core logic is intact.
+2.  **Sandbox Environment Verification** — `test-dir` must be correctly configured to use the local plugin.
+3.  **Guardrail Scenario Simulation** — Core features (TDD enforcement, Design Approval) must be verified via actual or simulated tool calls.
+4.  **Installation & Identity Audit** — Physical symlinks and the agent's identity/knowledge of superpowers must be verified.
 
-### 2. Isolated Verification
-Always test in an isolated directory to avoid polluting your main project.
-- Use `test-dir/` as the sandbox.
-- Ensure `test-dir/opencode.json` points to the local project: `"plugin": ["file://<absolute-path-to-opencoding-agent>"]`.
+## Workflow
 
-### 3. Execution
-Run a simple command to trigger the plugin's `Plugin` entry point.
-```bash
-cd test-dir
-opencode run hello --print-logs
-```
+### 1. Local Integrity Check
+- **Build**: Run `bun run build` and ensure `dist/` is updated.
+- **Unit Tests**: Run `bun test` and verify all 56+ tests pass.
 
-### 4. Verification Table
+### 2. Sandbox Environment Verification
+- **Config**: Ensure `test-dir/opencode.json` contains:
+  ```json
+  { "plugin": ["file:///path/to/opencoding-agent"] }
+  ```
+- **CLI Check**: Run `opencode --version` inside `test-dir`.
 
-| Check | Action | Expected Result |
-|-------|--------|-----------------|
-| **Symlinks** | `ls -l ~/.config/opencode/skills/superpowers` | Points to `[repo]/src/superpowers/skills` |
-| **Plugin Link** | `ls -l ~/.config/opencode/plugins/superpowers.js` | Points to `[repo]/src/superpowers/.opencode/plugins/superpowers.js` |
-| **Skill Load** | `skill --list` | `superpowers/` skills appear in the list |
-| **Bootstrap** | Ask: "Do you have superpowers?" | Agent mentions TDD, Debugging, or specific instructions |
+### 3. Guardrail Scenario Simulation
+- **Design Approval**: Attempt to call `writing-plans` for an unapproved topic and verify it's blocked.
+- **TDD RED Phase**: Attempt to `edit` a source file without a failing test and verify it's blocked.
+- **TDD GREEN/REFACTOR**: Verify `edit` is allowed after a test has passed or failed.
+- **Feedback**: Confirm Toast notifications and clear Korean guidance messages appear in logs.
 
-## Quick Reference
-- **Force Re-link**: Delete `~/.config/opencode/skills/superpowers` and restart OpenCode.
-- **Log Check**: Look for `[opencoding-agent] Created link` in the logs.
+### 4. Installation & Identity Audit
+- **Symlinks**: Verify `~/.config/opencode/skills/superpowers` exists and is a directory/link.
+- **Bootstrap**: Run `opencode run "Do you have superpowers?"` and verify the agent describes TDD and Design Approval workflows.
 
 ## Common Mistakes
-- **Relative Path in Config**: Using relative paths in `opencode.json` can lead to "Module not found" errors. Always use absolute `file://` URLs for local testing.
-- **Broken Links**: If the source path changes, the linker might fail if it doesn't have permissions to overwrite. The linker is designed to `rm` and `symlink` if paths mismatch.
+- **Skipping Build**: Forgetting to run `tsc` before testing changes in `test-dir`.
+- **Absolute Paths**: Using relative paths in `opencode.json` which fail when loaded by the OpenCode server.
+- **Stale State**: Forgetting that `SuperpowersManager` is in-memory and might need a fresh session for certain tests.

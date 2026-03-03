@@ -19,7 +19,7 @@ export async function sequencer(
   // Rule 1: Design Approval
   if (tool === 'writing-plans' && args && typeof args.topic === 'string') {
     if (!superpowersManager.isApproved(sessionID, args.topic)) {
-      const message = `[Superpowers] 설계 승인(brainstorming)이 필요합니다. '${args.topic}'에 대한 구현 계획을 작성하기 전에 먼저 brainstorming을 통해 설계를 승인받으세요.`;
+      const message = `[Superpowers Guardrail] 설계 승인(brainstorming)이 필요합니다. '${args.topic}'에 대한 구현 계획을 작성하기 전에 먼저 brainstorming을 통해 설계를 승인받으세요.`;
       logger.warn(message, 'Superpowers Guardrail');
       throw new Error(message);
     }
@@ -40,7 +40,7 @@ export async function sequencer(
       // Only block if the test status is undefined (never tested)
       // Both 'failed' (Red phase) and 'passed' (Green/Refactor phase) are allowed
       if (status === undefined) {
-        const message = `[Superpowers] TDD 원칙에 따라, 먼저 실패하는 테스트를 작성하고 실행해야 합니다. '${filePath}'를 수정하기 전에 '${testPath}'를 작성하고 실행하여 실패하는 것을 확인하세요.`;
+        const message = `[Superpowers Guardrail] TDD 원칙에 따라, 먼저 실패하는 테스트를 작성하고 실행해야 합니다. '${filePath}'를 수정하기 전에 '${testPath}'를 작성하고 실행하여 실패하는 것을 확인하세요.`;
         logger.warn(message, 'Superpowers Guardrail');
         throw new Error(message);
       }
