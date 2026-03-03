@@ -1,1 +1,2 @@
-Never remove docs/plans/ from .gitignore. These files must NEVER be uploaded or committed to git.
+- Never remove docs/plans/ from .gitignore. (NEVER commit/upload these files)
+- Always use the `testing-plugin` skill for verification before committing.

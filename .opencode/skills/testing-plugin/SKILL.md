@@ -16,19 +16,24 @@ This skill provides a systematic workflow for verifying the "Zero-Config" setup 
 
 ## Core Workflow
 
-### 1. Preparation (Isolated Environment)
+### 1. Preparation (Build and Test)
+Before manual verification, ensure all automated tests pass and the plugin is built.
+- **Build**: `npm run build` (or `bun run build`) to reflect `src/` changes in `dist/`.
+- **Unit Tests**: `bun test` to ensure core logic is intact.
+
+### 2. Isolated Verification
 Always test in an isolated directory to avoid polluting your main project.
 - Use `test-dir/` as the sandbox.
 - Ensure `test-dir/opencode.json` points to the local project: `"plugin": ["file://<absolute-path-to-opencoding-agent>"]`.
 
-### 2. Execution
+### 3. Execution
 Run a simple command to trigger the plugin's `Plugin` entry point.
 ```bash
 cd test-dir
 opencode run hello --print-logs
 ```
 
-### 3. Verification Table
+### 4. Verification Table
 
 | Check | Action | Expected Result |
 |-------|--------|-----------------|
