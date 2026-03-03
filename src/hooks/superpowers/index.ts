@@ -1,8 +1,15 @@
+import { translator } from './translator';
+import { tester } from './tester';
+import { sequencer } from './sequencer';
 import path from 'path';
 import fs from 'fs';
-import { getPluginRoot, getConfigDir } from '../utils/paths';
-import { logger } from '../utils/logger';
+import { getPluginRoot, getConfigDir } from '../../utils/paths';
+import { logger } from '../../utils/logger';
+import type { Hooks } from "@opencode-ai/plugin";
 
+/**
+ * Extracts and strips frontmatter from a markdown string.
+ */
 const extractAndStripFrontmatter = (content: string) => {
   const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
   if (!match) return { frontmatter: {}, content };
@@ -23,12 +30,15 @@ const extractAndStripFrontmatter = (content: string) => {
   return { frontmatter, content: body };
 };
 
-export const getSuperpowersHooks = async (_ctx: any) => {
-  const pluginRoot = getPluginRoot();
-  const configDir = getConfigDir();
-  const superpowersSkillsDir = path.resolve(pluginRoot, 'src/skills/superpowers');
-
-  const getBootstrapContent = () => {
+/**
+ * Loads the bootstrap system prompt for Superpowers.
+ */
+const getBootstrapContent = () => {
+  try {
+    const pluginRoot = getPluginRoot();
+    const configDir = getConfigDir();
+    const superpowersSkillsDir = path.resolve(pluginRoot, 'src/skills/superpowers');
+    
     const skillPath = path.join(superpowersSkillsDir, 'using-superpowers', 'SKILL.md');
     if (!fs.existsSync(skillPath)) {
       logger.warn('Superpowers bootstrap skill not found', 'Plugin Init');
@@ -58,14 +68,30 @@ ${content}
 
 ${toolMapping}
 </EXTREMELY_IMPORTANT>`;
-  };
+  } catch (error) {
+    logger.error(`Error loading bootstrap content: ${error}`, 'Plugin Init');
+    return null;
+  }
+};
 
-  return {
-    'experimental.chat.system.transform': async (_input: any, output: any) => {
-      const bootstrap = getBootstrapContent();
-      if (bootstrap) {
-        (output.system ||= []).push(bootstrap);
-      }
+/**
+ * Integrated Superpowers Hooks
+ */
+export const superpowersHooks: Hooks = {
+  'experimental.chat.system.transform': async (_input, output) => {
+    const bootstrap = getBootstrapContent();
+    if (bootstrap) {
+      (output.system ||= []).push(bootstrap);
     }
-  };
+  },
+  'tool.execute.before': async (input, output) => {
+    // 1. Enforce workflow rules (Design Approval, TDD)
+    await sequencer(input, output);
+    // 2. Validate tool names and provide feedback on aliases
+    await translator(input, output);
+  },
+  'tool.execute.after': async (input, output) => {
+    // 3. Monitor test results and update TDD status
+    await tester(input, output);
+  }
 };

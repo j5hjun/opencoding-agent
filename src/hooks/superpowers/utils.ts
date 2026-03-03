@@ -1,4 +1,5 @@
 import path from 'path';
+import { logger } from '../../utils/logger';
 
 /**
  * Converts a source file path to its corresponding test file path.
@@ -26,7 +27,7 @@ export function getTestPath(srcPath: string): string {
         prefix = srcPath.slice(0, srcIndexAlt + 1);
         normalizedPath = srcPath.slice(srcIndexAlt + 1);
       } else {
-        console.warn(`[getTestPath] Absolute path does not contain /src/ segment: ${srcPath}`);
+        logger.warn(`[getTestPath] Absolute path does not contain /src/ segment: ${srcPath}`, 'Superpowers Guardrail');
       }
     }
   }
@@ -38,7 +39,7 @@ export function getTestPath(srcPath: string): string {
     return path.normalize(path.join(prefix, 'tests', `${baseName}.test${ext}`));
   }
 
-  console.warn(`[getTestPath] Could not determine test path for: ${srcPath}`);
+  logger.warn(`[getTestPath] Could not determine test path for: ${srcPath}`, 'Superpowers Guardrail');
   return srcPath;
 }
 

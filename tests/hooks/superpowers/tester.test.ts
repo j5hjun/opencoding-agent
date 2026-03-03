@@ -165,5 +165,23 @@ describe('Superpowers Hooks', () => {
       expect(markAsFailedSpy).not.toHaveBeenCalled();
       expect(markAsPassedSpy).not.toHaveBeenCalled();
     });
+
+    it('should mark as approved if question tool gets "승인" with design approval header', async () => {
+      const input = {
+        tool: 'question',
+        sessionID,
+        callID,
+        args: { header: 'Design Approval: Superpowers Feature' },
+      };
+      const output = {
+        title: 'question',
+        output: '네, 승인합니다.',
+        metadata: { args: { header: 'Design Approval: Superpowers Feature' } },
+      };
+
+      await tester(input, output);
+
+      expect(superpowersManager.isApproved(sessionID, 'Superpowers Feature')).toBe(true);
+    });
   });
 });

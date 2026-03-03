@@ -9,7 +9,7 @@ import path from 'path';
  * the TDD status in SuperpowersManager.
  */
 export async function tester(
-  input: { tool: string; sessionID: string; callID: string; args: any },
+  input: { tool: string; sessionID: string; callID: string; args?: any },
   output: { title: string; output: string; metadata: any }
 ): Promise<void> {
   const { tool, sessionID, args } = input;
@@ -39,6 +39,15 @@ export async function tester(
       } else if (output.output.includes('PASS') || outputLower.includes('passed') || (output.metadata && output.metadata.exitCode === 0)) {
         superpowersManager.markAsPassed(sessionID, testPath);
       }
+    }
+  }
+
+  // Monitor 'question' tool for design approval
+  if (tool === 'question' && output.output.includes('승인')) {
+    const header = args?.header || (output.metadata?.args?.header);
+    if (typeof header === 'string' && header.startsWith('Design Approval: ')) {
+      const topic = header.replace('Design Approval: ', '').trim();
+      superpowersManager.approve(sessionID, topic);
     }
   }
 }
