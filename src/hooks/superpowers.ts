@@ -25,7 +25,7 @@ const extractAndStripFrontmatter = (content: string) => {
 export const getSuperpowersHooks = async (_ctx: any) => {
   const pluginRoot = getPluginRoot();
   const configDir = getConfigDir();
-  const superpowersSkillsDir = path.resolve(pluginRoot, 'src/superpowers/skills');
+  const superpowersSkillsDir = path.resolve(pluginRoot, 'src/skills/superpowers');
 
   const getBootstrapContent = () => {
     const skillPath = path.join(superpowersSkillsDir, 'using-superpowers', 'SKILL.md');

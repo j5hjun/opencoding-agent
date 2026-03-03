@@ -8,10 +8,10 @@ import { ensureSymlink } from '../utils/linker';
  */
 export const setupSuperpowersLink = async (_ctx: any) => {
   const configDir = getConfigDir();
-  const targetSkills = path.join(configDir, 'skills/superpowers');
+  const targetSkills = path.join(configDir, 'skills');
 
   const pluginRoot = getPluginRoot();
-  const sourceSkills = path.join(pluginRoot, 'src/superpowers/skills');
+  const sourceSkills = path.join(pluginRoot, 'src/skills');
 
   ensureSymlink(sourceSkills, targetSkills, 'dir');
 };
