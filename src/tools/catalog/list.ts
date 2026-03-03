@@ -1,6 +1,6 @@
 import { tool } from "@opencode-ai/plugin";
-import { REPO_URL } from "./constants";
-import { logger } from "../../utils/logger";
+
+const REPO_URL = "https://raw.githubusercontent.com/obra/superpowers/main";
 
 export const listTool = tool({
   description: "List all available subagent categories and the number of agents in each.",
@@ -8,13 +8,9 @@ export const listTool = tool({
   execute: async () => {
     try {
       const url = `${REPO_URL}/catalog.json?t=${Date.now()}`;
-      // Internal info log
-      logger.info(`Fetching catalog from: ${url}`);
       const response = await fetch(url);
       if (!response.ok) {
-        const errorMsg = `Fetch failed for ${url}: ${response.status} ${response.statusText}`;
-        logger.error(errorMsg);
-        return errorMsg;
+        return `Fetch failed for ${url}: ${response.status} ${response.statusText}`;
       }
       const catalog = await response.json() as any[];
       

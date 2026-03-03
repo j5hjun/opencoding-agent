@@ -1,42 +1,31 @@
 import type { Plugin } from "@opencode-ai/plugin";
-import { injectAgents } from "./agents";
-import { catalogTools } from "./tools/catalog/index";
-import { setupSuperpowersLink } from "./setup/linker";
+import { injectAgents } from "./agents/index";
+import { allTools } from "./tools/index";
 import { getHooks } from "./hooks/index";
-import { loadCatalogHooks } from "./hooks/catalog-prompt";
-import { logger } from "./utils/logger";
-import { mergePluginHooks } from "./utils/hooks";
+import { logger } from "./utils/index";
+import { setupEnvironment, mergeHooks } from "./setup";
 
 /**
- * opencoding-agent Plugin
+ * opencoding-agent Plugin Entry Point
  * 
- * Replaces default OpenCode agents with core-identical 'plan' and 'build' modes.
- * Now bundles and auto-configures Superpowers!
+ * Orchestrates environment setup and hook integration.
  */
 const OpencodingAgentPlugin: Plugin = async (ctx) => {
-  // Initialize logger with client to enable TUI features (toasts)
+  // 1. Foundation: Initialize Global Logger
   logger.setClient(ctx.client);
+  
+  // 2. Setup: Prepare symlinks and resources using SDK context
+  await setupEnvironment(ctx.directory);
 
-  logger.info('Plugin initializing...');
-  // Setup: Auto-link superpowers resources to global config
-  await setupSuperpowersLink(ctx);
-
-  // Load all integrated hooks
-  const { superpowersHooks } = await getHooks(ctx);
-  // Load catalog guidance hooks
-  const catalogHooks = await loadCatalogHooks(ctx);
+  // 3. Composition: Load and merge hooks from different modules
+  const { superpowersHooks, catalogHooks } = await getHooks(ctx);
 
   return {
-    // Config hook: Injected once during initialization
-    config: async (config) => {
-      await injectAgents(config);
+    config: async (config) => { 
+      await injectAgents(config); 
     },
-    // Register custom tools
-    tool: {
-      ...catalogTools
-    },
-    // Chained hooks from multiple sources
-    ...mergePluginHooks([superpowersHooks, catalogHooks])
+    tool: { ...allTools },
+    ...mergeHooks(superpowersHooks, catalogHooks)
   };
 };
 

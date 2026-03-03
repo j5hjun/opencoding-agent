@@ -1,2 +1,8 @@
+- AGENT.md: Record core principles only in concise and intuitive bullet point format.
+- Top-down: Hierarchy-based strict unidirectional imports from top to bottom; reverse imports are strictly prohibited.
+- Recursive Index: Every directory must use `index.ts` as its sole entry point (Barrel Export) for higher-level modules.
+- Co-location & High Cohesion: Keep logic, types, and helpers within the module where they are used to ensure functional self-containment.
+- Standardized Logging: Use the centralized `logger` in `utils` for all feedback to maintain consistent console and UI (toast) behavior.
+- Perfect Symmetry: The `tests/` directory structure must physically mirror `src/` to maintain structural traceability.
 - Never remove docs/plans/ from .gitignore. (NEVER commit/upload these files)
 - Always use the `testing-plugin` skill for verification before committing.
