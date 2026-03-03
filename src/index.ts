@@ -2,7 +2,7 @@ import type { Plugin } from "@opencode-ai/plugin";
 import { injectAgents } from "./agents";
 import { catalogTools } from "./tools/catalog/index";
 import { setupSuperpowersLink } from "./setup/linker";
-import { loadSuperpowersHooks } from "./hooks/superpowers-loader";
+import { getSuperpowersHooks } from "./hooks/superpowers";
 import { loadCatalogHooks } from "./hooks/catalog-prompt";
 import { logger } from "./utils/logger";
 import { mergePluginHooks } from "./utils/hooks";
@@ -18,8 +18,8 @@ const OpencodingAgentPlugin: Plugin = async (ctx) => {
   // Setup: Auto-link superpowers resources to global config
   await setupSuperpowersLink(ctx);
 
-  // Load original superpowers hooks
-  const superpowersHooks = await loadSuperpowersHooks(ctx);
+  // Load superpowers hooks (TS)
+  const superpowersHooks = await getSuperpowersHooks(ctx);
   // Load catalog guidance hooks
   const catalogHooks = await loadCatalogHooks(ctx);
 
